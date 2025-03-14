@@ -56,3 +56,19 @@ LOG_LEVEL = 'INFO'
 LOG_FORMAT = '%(asctime)s [%(levelname)s] %(name)s: %(message)s (%(filename)s:%(lineno)d)'
 LOG_DATEFORMAT = '%Y-%m-%d %H:%M:%S'
 LOG_FILE_APPEND = False  # 새로운 크롤링 시작 시 로그 파일 덮어쓰기
+
+# 지원할 브라우저 유형 지정 (예: Chrome, Firefox, Safari, Edge)
+USER_AGENTS_ALLOWED_BROWSERS = [
+    "Chrome",
+    "Firefox",
+    "Safari",
+    "Edge",
+]
+
+# 지원할 장치 유형 지정 (예: Desktop)
+USER_AGENTS_ALLOWED_DEVICES = [
+    "Desktop",
+]
+
+# 지원하지 않는 유형을 선택할 경우 에러 대신 무시
+USER_AGENTS_WARN_ON_UNSUPPORTED = False
