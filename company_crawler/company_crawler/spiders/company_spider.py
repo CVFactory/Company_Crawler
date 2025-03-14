@@ -26,6 +26,11 @@ class CompanySpider(scrapy.Spider):
         """
         웹페이지에서 모든 텍스트를 추출합니다.
         """
+        # 응답 데이터가 텍스트인지 확인
+        if not response.text:
+            self.logger.warning(f"Response content is not text: {response.url}")
+            return ""
+
         # 스크립트와 스타일 태그를 제외한 텍스트 추출
         text_nodes = response.xpath("//body//*[not(self::script or self::style)]/text()").getall()
         cleaned_text = " ".join([text.strip() for text in text_nodes if text.strip()])

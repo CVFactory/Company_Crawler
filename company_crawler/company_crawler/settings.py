@@ -28,14 +28,14 @@ RETRY_PRIORITY_ADJUST = -1
 # User-Agent 회전 (차단 방지)
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-    'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
+    'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
 }
 
 # IP 차단 방지를 위한 프록시 미들웨어 추가 (옵션)
-DOWNLOADER_MIDDLEWARES.update({
-    'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': 610,
-    'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': 620,
-})
+# DOWNLOADER_MIDDLEWARES.update({
+#     'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': 610,
+#     'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': 620,
+# })
 
 # Proxy Pool 설정 (필요 시)
 PROXY_POOL_ENABLED = True
