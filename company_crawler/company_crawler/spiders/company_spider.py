@@ -4,33 +4,40 @@ from company_crawler.items import CompanyItem
 
 class CompanySpider(scrapy.Spider):
     name = "company_spider"
-    start_urls = ["https://deepinsight.ninehire.site/"]
+    
+    # 특정 기업의 세부 페이지 URL을 직접 지정
+    start_urls = [
+        "https://deepinsight.ninehire.site/"
+    ]
 
     def parse(self, response):
+        """
+        기업 목록 페이지 파싱을 제거하고, 직접 세부 페이지를 처리합니다.
+        """
         try:
-            # 기업 목록 페이지에서 링크 추출
-            company_links = response.css("a.company-link::attr(href)").getall()
-            if not company_links:
-                self.logger.warning("No company links found on the page")
-            for link in company_links:
-                if not link.startswith(('http', 'https')):
-                    link = response.urljoin(link)
-                yield scrapy.Request(link, callback=self.parse_company)
+            # 바로 parse_company 메서드를 호출
+            yield self.parse_company(response)
         except Exception as e:
-            self.logger.error(f"List page parsing failed: {response.url} (Status: {response.status})", exc_info=True)
+            self.logger.error(f"Error parsing company page: {response.url} (Status: {response.status})", exc_info=True)
 
     def parse_company(self, response):
+        """
+        특정 기업의 세부 정보를 추출합니다.
+        """
         try:
             if response.status == 404:
                 self.logger.warning(f"404 Error: {response.url}")
                 return None
+
             item = CompanyItem()
             item['name'] = self._extract_text(response, "//h1[@class='company-name']/text()")
             item['url'] = response.url
             item['address'] = self._extract_text(response, "//div[@class='address']/text()")
+
             # 전체 텍스트 추출
             full_text = self._extract_full_text(response)
             item['full_text'] = full_text  # 새로운 필드 추가
+
             return item
         except Exception as e:
             self.logger.error(f"Detail page parsing failed: {response.url} (Status: {response.status})", exc_info=True)
@@ -38,6 +45,9 @@ class CompanySpider(scrapy.Spider):
             return None
 
     def _extract_text(self, response, xpath):
+        """
+        XPath를 사용해 텍스트를 추출합니다.
+        """
         text = response.xpath(xpath).get()
         return text.strip() if text and isinstance(text, str) else None
 
