@@ -5,7 +5,7 @@ from myapp.models import Company
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from myapp.serializers import CompanySerializer
+from myapp.serializers import CompanySerializer  # serializers.py 참조
 import logging
 
 logger = logging.getLogger(__name__)

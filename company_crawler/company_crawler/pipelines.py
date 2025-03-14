@@ -19,25 +19,12 @@ class SaveToDatabasePipeline:
         try:
             item.validate()  # 유효성 검사
             with transaction.atomic():
-                company, created = Company.objects.get_or_create(
-                    name=item['name'],
-                    defaults={
-                        'url': item['url'],
-                        'address': item['address'],
-                        'full_text': item.get('full_text', '')  # 새로운 필드 추가
-                    }
-                )
-                if not created:
-                    # 중복 데이터가 발견된 경우 갱신
-                    company.url = item['url']
-                    company.address = item['address']
-                    company.full_text = item.get('full_text', '')
-                    company.save()
-                    spider.logger.warning(f"Updated duplicate entry: {item['name']} (URL: {item['url']})")
-                spider.logger.debug(f"Successfully processed: {item['name']} (ID: {company.id})")
+                company = Company(full_text=item['full_text'])
+                company.save()
+                spider.logger.debug(f"Successfully processed: {item['full_text'][:50]}...")
             return item
         except IntegrityError as e:
-            error_msg = f"Integrity error for {item.get('name', 'N/A')}: {str(e)}"
+            error_msg = f"Integrity error for full_text: {str(e)}"
             spider.logger.error(error_msg, exc_info=True)
             raise DropItem(error_msg)
         except OperationalError as e:
@@ -50,7 +37,7 @@ class SaveToDatabasePipeline:
             spider.logger.error(error_msg, extra={'item_data': dict(item)})
             raise DropItem(error_msg)
         except Exception as e:
-            error_msg = f"Unexpected error processing {item.get('name', 'N/A')}: {str(e)}"
+            error_msg = f"Unexpected error processing item: {str(e)}"
             spider.logger.exception(error_msg, exc_info=True)
             raise DropItem(error_msg)
 
